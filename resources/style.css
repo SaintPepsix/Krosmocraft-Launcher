@@ -1,0 +1,17 @@
+#switch {
+    -fx-button_background_color: #333333;
+    -fx-background_pressed_color: #666666;
+
+    -fx-border_hover_color: #858585;
+
+    -fx-text_color: white;
+    -fx-default_button_text_color: white;
+
+    -fx-focus_ring_border_color: white;
+}
+
+#switch {
+    -fx-border_hover_selected_color: derive(accent_color, 70%);
+}aasaw<
+wq
+wqqs
