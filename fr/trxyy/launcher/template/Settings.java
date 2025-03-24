@@ -4,8 +4,6 @@ import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import fr.trxyy.alternative.alternative_api.GameEngine;
 import fr.trxyy.alternative.alternative_api.GameSize;
@@ -14,7 +12,6 @@ import fr.trxyy.alternative.alternative_api.utils.FontLoader;
 import fr.trxyy.alternative.alternative_api.utils.ResourceLocation;
 import fr.trxyy.alternative.alternative_api.utils.config.EnumConfig;
 import fr.trxyy.alternative.alternative_api.utils.config.LauncherConfig;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherButton;
 import fr.trxyy.alternative.alternative_api_ui.components.LauncherImage;
 import fr.trxyy.alternative.alternative_api_ui.components.LauncherLabel;
 import fr.trxyy.alternative.alternative_api_ui.components.LauncherRectangle;
@@ -26,17 +23,11 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -48,7 +39,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -70,18 +60,16 @@ public class Settings {
 	private final ResourceLocation loc;
 	private LauncherLabel selected;
 	private final String USERNAME;
-	private LauncherLabel titleLabel;
-	
-	public Settings(LauncherConfig config, GameEngine engine, ResourceLocation loc, String username, int size, LauncherLabel titleLabel){
+
+	public Settings(LauncherConfig config, GameEngine engine, ResourceLocation loc, String username, int size){
 		this.root = LauncherMain.pane;
 		this.config = config;
 		this.theGameEngine = engine;
 		this.loc = loc;
 		this.USERNAME = username;
 		this.size = size;
-		this.titleLabel = titleLabel;
 	}
-	
+
 	public void draw() {
 		ArrayList<LauncherLabel> labels = new ArrayList<LauncherLabel>();
 		this.blurRectangle = new LauncherRectangle(0, 0, theGameEngine.getWidth(), theGameEngine.getHeight());
@@ -89,7 +77,7 @@ public class Settings {
 		this.blurRectangle.setFill(Color.rgb(10, 10, 10, 0.9));
     	CAnimation c = new CAnimation(blurRectangle.opacityProperty(), 1, 500);
     	c.run();
-    	
+
 		this.settingsTitle = new LauncherLabel();
 		this.settingsTitle.setText("Settings");
 		this.settingsTitle.setAlignment(Pos.CENTER);
@@ -99,7 +87,7 @@ public class Settings {
 		this.settingsTitle.setOpacity(0);
     	c = new CAnimation(settingsTitle.opacityProperty(), 1, 500);
     	c.run();
-    	
+
 		this.compte = new LauncherLabel();
 		this.compte.setText("Compte");
 		this.compte.setAlignment(Pos.CENTER_LEFT);
@@ -113,7 +101,7 @@ public class Settings {
 		this.compte.setEffect(g);
     	c = new CAnimation(g.levelProperty(), 1, 500);
     	c.run();
-    	
+
 		this.minecraft = new LauncherLabel();
 		this.minecraft.setText("Minecraft");
 		this.minecraft.setAlignment(Pos.CENTER_LEFT);
@@ -123,7 +111,7 @@ public class Settings {
 		this.minecraft.setOpacity(0);
     	c = new CAnimation(minecraft.opacityProperty(), 0.4, 500);
     	c.run();
-    	
+
 		this.shaders = new LauncherLabel();
 		this.shaders.setText("Graphisme");
 		this.shaders.setAlignment(Pos.CENTER_LEFT);
@@ -133,7 +121,7 @@ public class Settings {
 		this.shaders.setOpacity(0);
     	c = new CAnimation(shaders.opacityProperty(), 0.4, 500);
     	c.run();
-    	
+
 		this.java = new LauncherLabel();
 		this.java.setText("Java");
 		this.java.setAlignment(Pos.CENTER_LEFT);
@@ -143,13 +131,13 @@ public class Settings {
 		this.java.setOpacity(0);
     	c = new CAnimation(java.opacityProperty(), 0.4, 500);
     	c.run();
-    	
+
 		this.line = new LauncherImage(this.loc.loadImage(theGameEngine, "grayline.png"));
 		this.line.setBounds(getResponsive(10) * 14, getResponsive(10) * 30 + getResponsive(5), getResponsive(10) * 6 + getResponsive(5), 1);
 		this.line.setOpacity(0);
     	c = new CAnimation(line.opacityProperty(), 0.5, 500);
     	c.run();
-    	
+
 		this.done = new LauncherLabel();
 		this.done.setText("Fermer");
 		this.done.setAlignment(Pos.CENTER_LEFT);
@@ -159,15 +147,15 @@ public class Settings {
 		this.done.setOpacity(0);
     	c = new CAnimation(done.opacityProperty(), 0.8, 500);
     	c.run();
-    	
+
     	labels.add(compte);
     	labels.add(minecraft);
     	labels.add(shaders);
     	labels.add(java);
-    	
+
     	selected = this.compte;
 		accountTab();
-    	
+
     	this.done.setOnMouseEntered(new EventHandler<MouseEvent>() {
 		    @Override
 		    public void handle(MouseEvent t) {
@@ -196,7 +184,7 @@ public class Settings {
 		    	c.run();
 		    }
 		});
-    	
+
     	for (LauncherLabel l : labels) {
     		l.setOnMouseEntered(new EventHandler<MouseEvent>() {
     		    @Override
@@ -605,7 +593,7 @@ public class Settings {
 		    }
 		});
 	}
-	
+
 	private void endAccount() {
     	CAnimation c = new CAnimation(accountTitle.opacityProperty(), 0.0, 400);
     	c.run();
@@ -653,14 +641,11 @@ public class Settings {
 	private LauncherLabel minecraftSubtitle;
 	private LauncherImage lineMinecraft1;
 	private LauncherImage lineMinecraft2;
-	private LauncherImage lineMinecraft3;
 	private LauncherLabel resolutionLabel;
 	private ComboBox<String> resolutionField;
 	private LauncherLabel fullScreenLabel;
 	private ToggleSwitch fullScreenToggle;
 	private LauncherLabel borderlessLabel;
-	private LauncherLabel serverLabel;
-	private ComboBox<String> serverChoice;
 	private ToggleSwitch borderlessToggle;
 	private void minecraftTab() {
 		boolean isSmall = getResponsive(10) == 10;
@@ -691,10 +676,10 @@ public class Settings {
 		this.resolutionLabel.setOpacity(0);
     	c = new CAnimation(resolutionLabel.opacityProperty(), 1, 500);
     	c.run();
-    	
+
     	this.resolutionField = new ComboBox<String>();
 		this.resolutionField.setPrefSize(getResponsive(10) * 13, getResponsive(10) * 3);
-		
+
 		this.populateSizeList();
 		if (config.getValue(EnumConfig.GAME_SIZE) != null) {
 			this.resolutionField.setValue(GameSize.getWindowSize(Integer.parseInt((String) config.getValue(EnumConfig.GAME_SIZE))).getDesc());
@@ -733,7 +718,7 @@ public class Settings {
 		root.getChildren().add(this.resolutionField);
     	c = new CAnimation(resolutionField.opacityProperty(), 0.8, 500);
     	c.run();
-    	
+
 		this.lineMinecraft1 = new LauncherImage(this.loc.loadImage(theGameEngine, "grayline.png"));
 		this.lineMinecraft1.setBounds(getResponsive(10) * 30 + getResponsive(2), getResponsive(10) * 27, getResponsive(10) * 50, 1);
 		this.lineMinecraft1.setOpacity(0);
@@ -749,7 +734,7 @@ public class Settings {
 		this.fullScreenLabel.setOpacity(0);
 		c = new CAnimation(fullScreenLabel.opacityProperty(), 1, 500);
 		c.run();
-    	
+
 		this.fullScreenToggle = new ToggleSwitch(theGameEngine);
 		if (isSmall) {
 			this.fullScreenToggle.setLayoutX(getResponsive(10) * 30 + getResponsive(5));
@@ -759,7 +744,7 @@ public class Settings {
 		}
 		this.fullScreenToggle.setLayoutY(getResponsive(10) * 32 + getResponsive(6));
 		root.getChildren().add(this.fullScreenToggle);
-		
+
     	if ((boolean) this.config.getValue(EnumConfig.FULLSCREEN)) {
     		this.fullScreenToggle.setSelected(true);
     	}
@@ -783,7 +768,7 @@ public class Settings {
 		this.lineMinecraft2.setOpacity(0);
 		c = new CAnimation(lineMinecraft2.opacityProperty(), 0.5, 500);
 		c.run();
-    	
+
 		this.borderlessLabel = new LauncherLabel();
 		this.borderlessLabel.setText("Mode plein écran sans bordures");
 		this.borderlessLabel.setAlignment(Pos.CENTER_LEFT);
@@ -821,77 +806,8 @@ public class Settings {
 				}
 			}
 		});
-
-		this.lineMinecraft3 = new LauncherImage(this.loc.loadImage(theGameEngine, "grayline.png"));
-		this.lineMinecraft3.setBounds(getResponsive(10) * 30 + getResponsive(2), getResponsive(10) * 47, getResponsive(10) * 50, 1);
-		this.lineMinecraft3.setOpacity(0);
-		c = new CAnimation(lineMinecraft3.opacityProperty(), 0.5, 500);
-		c.run();
-
-		this.serverLabel = new LauncherLabel();
-		this.serverLabel.setText("Serveur");
-		this.serverLabel.setAlignment(Pos.CENTER_LEFT);
-		this.serverLabel.setFont(FontLoader.loadFont("Comfortaa-Bold.ttf", "Comfortaa", size + 1));
-		this.serverLabel.setStyle("-fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;");
-		this.serverLabel.setBounds(getResponsive(10) * 32 + getResponsive(5), getResponsive(10) * 48 - getResponsive(1), getResponsive(10) * 24, getResponsive(10) * 4);
-		this.serverLabel.setOpacity(0);
-		c = new CAnimation(serverLabel.opacityProperty(), 1, 500);
-		c.run();
-
-		this.serverChoice = new ComboBox<>();
-		this.serverChoice.setPrefSize(getResponsive(10) * 13, getResponsive(10) * 3);
-
-		String[] servers = {"Live", "Bêta Pepsi", "Bêta Nheo", "Serveur évènement"};
-		this.serverChoice.getItems().addAll(servers);
-//		this.populateSizeList();
-		if (config.getValue(EnumConfig.SERVER) != null) {
-			this.serverChoice.setValue((String) config.getValue(EnumConfig.SERVER));
-		} else {
-			this.serverChoice.setValue(servers[0]);
-			config.updateValue("server", servers[0]);
-		}
-		this.serverChoice.setLayoutX(getResponsive(10) * 32 + getResponsive(5));
-		this.serverChoice.setLayoutY(getResponsive(10) * 51 + getResponsive(8));
-		this.serverChoice.setVisibleRowCount(5);
-		this.serverChoice.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, new CornerRadii(4), BorderWidths.DEFAULT)));
-		this.serverChoice.setStyle("-fx-background-color: black; -fx-text-fill: white;");
-		this.serverChoice.setOpacity(0);
-		this.serverChoice.setVisible(true);
-		this.serverChoice.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-			public ListCell<String> call(ListView<String> param) {
-				return new ListCell<String>() {
-					protected void updateItem(String item, boolean empty) {
-						super.updateItem(item, empty);
-						setText(item);
-						setStyle(isSmall ? "-fx-font-size:13" : "-fx-font-size:25");
-						setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-						setTextFill(Color.WHITE);
-						config.updateValue("server", item);
-					}
-				};
-			}
-		});
-		this.serverChoice.setButtonCell(new ListCell<String>() {
-			protected void updateItem(String item, boolean empty) {
-				super.updateItem(item, empty);
-				setText(item);
-				setStyle(isSmall ? "-fx-font-size:13" : "-fx-font-size:25");
-				setTextFill(Color.WHITE);
-				if (!empty) {
-					config.updateValue("gamesize", GameSize.getWindowSize(item));
-				}
-				titleLabel.setText("Krosmocraft " +  "[" + item + "]");
-			}
-		});
-		root.getChildren().add(this.serverChoice);
-		c = new CAnimation(serverChoice.opacityProperty(), 0.8, 500);
-		c.run();
-
 	}
 
-
-
-	
 	private void endMinecraft() {
     	CAnimation c = new CAnimation(minecraftTitle.opacityProperty(), 0.0, 400);
     	c.run();
@@ -900,8 +816,6 @@ public class Settings {
     	c = new CAnimation(lineMinecraft1.opacityProperty(), 0.0, 400);
     	c.run();
 		c = new CAnimation(lineMinecraft2.opacityProperty(), 0.0, 400);
-		c.run();
-		c = new CAnimation(lineMinecraft3.opacityProperty(), 0.0, 400);
 		c.run();
     	c = new CAnimation(resolutionLabel.opacityProperty(), 0.0, 400);
     	c.run();
@@ -915,24 +829,17 @@ public class Settings {
 		c.run();
     	c = new CAnimation(borderlessLabel.opacityProperty(), 0.0, 400);
     	c.run();
-		c = new CAnimation(serverLabel.opacityProperty(), 0.0, 400);
-    	c.run();
-		c = new CAnimation(serverChoice.opacityProperty(), 0.0, 400);
-		c.run();
     	c = new CAnimation(borderlessToggle.opacityProperty(), 0.0, 400);
     	c.run();
     	this.minecraftTitle.setDisable(true);
     	this.minecraftSubtitle.setDisable(true);
     	this.lineMinecraft1.setDisable(true);
 		this.lineMinecraft2.setDisable(true);
-		this.lineMinecraft3.setDisable(true);
     	this.resolutionLabel.setDisable(true);
     	this.resolutionField.setDisable(true);
     	this.fullScreenLabel.setDisable(true);
     	this.fullScreenToggle.setDisable(true);
     	this.borderlessLabel.setDisable(true);
-    	this.serverLabel.setDisable(true);
-		this.serverChoice.setDisable(true);
     	this.borderlessToggle.setDisable(true);
 	}
 
@@ -962,19 +869,19 @@ public class Settings {
 		this.shadersSubtitle.setOpacity(0);
     	c = new CAnimation(shadersSubtitle.opacityProperty(), 1, 500);
     	c.run();
-    	
+
 		this.low = new LauncherImage(this.loc.loadImage(theGameEngine, "low.png"));
 		this.low.setBounds(getResponsive(10) * 32 + getResponsive(5), getResponsive(10) * 18, getResponsive(10) * 15, getResponsive(10) * 10 + getResponsive(2));
 		this.low.setOpacity(0);
-    	
+
 		this.med = new LauncherImage(this.loc.loadImage(theGameEngine, "med.png"));
 		this.med.setBounds(getResponsive(10) * 50, getResponsive(10) * 18, getResponsive(10) * 15, getResponsive(10) * 10 + getResponsive(2));
 		this.med.setOpacity(0);
-    	
+
 		this.high = new LauncherImage(this.loc.loadImage(theGameEngine, "high.png"));
 		this.high.setBounds(getResponsive(10) * 67 + getResponsive(5), getResponsive(10) * 18, getResponsive(10) * 15, getResponsive(10) * 10 + getResponsive(2));
 		this.high.setOpacity(0);
-		
+
 		this.shaderLabel = new LauncherLabel();
 		this.shaderLabel.setText("Faible");
 		this.shaderLabel.setAlignment(Pos.CENTER);
@@ -984,7 +891,7 @@ public class Settings {
 		this.shaderLabel.setOpacity(0);
     	c = new CAnimation(shaderLabel.opacityProperty(), 1, 500);
     	c.run();
-		
+
 		this.shaderDesc = new LauncherLabel();
 		this.shaderDesc.setText("");
 		this.shaderDesc.setTextAlignment(TextAlignment.CENTER);
@@ -995,7 +902,7 @@ public class Settings {
 		this.shaderDesc.setOpacity(0);
     	c = new CAnimation(shaderDesc.opacityProperty(), 1, 500);
     	c.run();
-    	
+
     	if(this.config.getValue(EnumConfig.QUALITY).equals("1")) {
         	c = new CAnimation(low.opacityProperty(), 1, 500);
         	c.run();
@@ -1025,9 +932,9 @@ public class Settings {
         	shaderLabel.setText("HD");
     		this.shaderDesc.setText(highEnd);
     	}
-    	
 
-    	
+
+
     	this.low.setOnMouseEntered(new EventHandler<MouseEvent>() {
 		    @Override
 		    public void handle(MouseEvent t) {
@@ -1387,7 +1294,7 @@ public class Settings {
 			config.updateValue("vmarguments", this.jvmBox.getText());
 		});
 	}
-	
+
 	private void endJava() {
     	CAnimation c = new CAnimation(javaTitle.opacityProperty(), 0.0, 400);
     	c.run();
@@ -1429,7 +1336,7 @@ public class Settings {
     	this.jvmTitle.setDisable(true);
     	this.jvmBox.setDisable(true);
 	}
-	
+
 	public void end() {
 		ending = true;
 		Task<Void> sleeper = new Task<Void>() {
@@ -1463,7 +1370,7 @@ public class Settings {
 			this.resolutionField.getItems().add(size.getDesc());
 		}
 	}
-	
+
 	public int getResponsive(int x) {
 		switch(x) {
 		case 2:
@@ -1488,7 +1395,7 @@ public class Settings {
 			return 0;
 		}
 	}
-	
+
 	public String convertBytesToString(long bytes) {
 	    if (-1000 < bytes && bytes < 1000) {
 	        return bytes + " o";
@@ -1500,7 +1407,7 @@ public class Settings {
 	    }
 	    return String.format("%.1f %co", bytes / 1000.0, ci.current());
 	}
-	
+
 	private final String vanilla = "Graphismes réduits" + '\n' + '\n' + "Garde tout de même l'aspect graphique général de Krosmocraft mais" + '\n' + "sacrifie de la qualité pour gagner en performance" + '\n' + '\n' + "Peut être tourné par tout types de PC et toasters" + '\n' + "4 Go ou + de RAM allouée conseillé";
 	private final String mediumEnd = "Graphismes optimisés" + '\n' + '\n' + "Le look de base de Krosmocraft en optimisant un maximum les" + '\n' + "paramètres pour garantir de bonnes performances" + '\n' + '\n' + "Peut être tourné par tout types de PC... normalement" + '\n' + "6 Go ou + de RAM allouée conseillé";
 	private final String highEnd = "Graphismes HD" + '\n' + '\n' + "Krosmocraft, encore plus beau. Si vous avez confiance en votre PC, il" + '\n' + "est conseillé de choisir cette option, après tout, vous le valez bien ♥" + '\n' + '\n' + "Peut être tourné par tout types de PC modernes" + '\n' + "8 Go de RAM allouée conseillé";

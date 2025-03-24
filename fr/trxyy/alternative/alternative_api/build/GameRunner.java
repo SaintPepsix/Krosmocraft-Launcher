@@ -1,14 +1,9 @@
 package fr.trxyy.alternative.alternative_api.build;
 
-import java.awt.Desktop;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,7 +13,7 @@ import java.util.Objects;
 
 import fr.trxyy.alternative.alternative_api.Infos;
 import fr.trxyy.launcher.template.ErrorAlert;
-import javafx.embed.swing.SwingFXUtils;
+import fr.trxyy.launcher.template.LauncherPanel;
 import org.apache.commons.lang3.text.StrSubstitutor;
 
 import fr.trxyy.alternative.alternative_api.GameEngine;
@@ -272,10 +267,9 @@ public class GameRunner {
 		}
 
 		/** ----- Direct connect to a server if required. ----- */
-		if (engine.getGameConnect() != null) {
-			commands.add("--server=" + engine.getGameConnect().getIp());
-			commands.add("--port=" + engine.getGameConnect().getPort());
-		}
+		String selectedServer = LauncherPanel.serverChoice.getValue();
+		commands.add("--server=" + Infos.servers.getOrDefault(selectedServer, engine.getGameConnect().getIp()));
+		commands.add("--port=" + Infos.ports.getOrDefault(selectedServer, engine.getGameConnect().getPort()));
 
 		/** ----- Tweak Class if required ----- */
 		if (engine.getGameStyle().equals(GameStyle.FORGE_1_7_10_OLD) || engine.getGameStyle().equals(GameStyle.FORGE_1_8_TO_1_12_2) || engine.getGameStyle().equals(GameStyle.OPTIFINE)) {
@@ -342,7 +336,11 @@ public class GameRunner {
 		map.put("auth_uuid", '"' + this.session.getUuid() + '"');
 		map.put("auth_access_token", '"' + this.session.getToken() + '"');
 		map.put("user_type", '"' + "legacy" + '"');
-		map.put("version_name", '"' + Infos.version + '"');
+
+		String version = LauncherPanel.serverChoice.getValue() != null ? LauncherPanel.serverChoice.getValue() : "Live";
+		version = version.equals("Live") ? Infos.version : version;
+		map.put("version_name", '"' + version + '"');
+
 		map.put("version_type", "release");
 		map.put("game_directory", '"' + this.engine.getGameFolder().getPlayDir().getAbsolutePath() + '"');
 		map.put("assets_root", '"' + this.engine.getGameFolder().getAssetsDir().getAbsolutePath() + '"');

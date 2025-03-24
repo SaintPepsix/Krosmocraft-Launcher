@@ -33,6 +33,10 @@ public class GameLinks {
 	 * The custom files url, ex: http://mywebsite.com/files/
 	 */
 	public String CUSTOM_FILES_URL;
+	/**
+	 * The server list file url, ex: http://mywebsite.com/servers.cfg
+	 */
+	public String SERVERS;
 
 	/**
 	 * The Constructor
@@ -51,6 +55,7 @@ public class GameLinks {
 		this.DELETE_LIST = baseUrl + "delete.cfg";
 		this.CUSTOM_FILES_URL = baseUrl + "files/";
 		this.MAINTENANCE = baseUrl + "status.cfg";
+		this.SERVERS = baseUrl + "servers.cfg";
 	}
 
 	/**
@@ -100,6 +105,13 @@ public class GameLinks {
 	 */
 	public String getCustomFilesUrl() {
 		return this.CUSTOM_FILES_URL;
+	}
+
+	/**
+	 * @return The server list url
+	 */
+	public String getServerListUrl() {
+		return this.SERVERS;
 	}
 
 }

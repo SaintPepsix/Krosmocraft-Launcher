@@ -1,12 +1,6 @@
 package fr.trxyy.alternative.alternative_api.updater;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -317,6 +311,50 @@ public class GameUpdater extends Thread {
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+
+	public void downloadAvailableServers() {
+		URL url = null;
+		BufferedReader read = null;
+		try {
+			url = new URL(this.engine.getGameLinks().getServerListUrl());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		try {
+			read = new BufferedReader(new InputStreamReader(url.openStream()));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		String i;
+		try {
+			while ((i = read.readLine()) != null) {
+				String[] parts = i.split("/");
+
+				if (parts.length == 3) {
+					String serverName = parts[0].trim();
+					String address = parts[1].trim();
+					String port = parts[2].trim();
+					Infos.servers.put(serverName, address);
+					Infos.ports.put(serverName, port);
+				} else {
+					System.out.println("Invalid line format: " + i);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			read.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		LauncherPanel.serverChoice.getItems().addAll("Live");
+		LauncherPanel.serverChoice.getItems().addAll(Infos.servers.keySet());
+
+		// Default Server
+		Infos.servers.put("Live", Infos.serverIp);
+		Infos.ports.put("Live", "3000");
 	}
 
 	/**

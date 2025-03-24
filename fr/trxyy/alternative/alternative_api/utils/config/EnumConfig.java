@@ -12,7 +12,7 @@ public enum EnumConfig {
 	FULLSCREEN("fullscreen", true),
 	BORDERLESS("borderless", true),
 	QUALITY("quality", ""),
-	SERVER("server", "");
+	SERVER("server", "Live");
 
 	public String option;
 	public Object def;

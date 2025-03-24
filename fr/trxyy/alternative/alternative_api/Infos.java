@@ -2,6 +2,8 @@ package fr.trxyy.alternative.alternative_api;
 
 import javafx.scene.image.Image;
 
+import java.util.HashMap;
+
 public class Infos {
 	public static final String serverIp = "play.krosmocraft.fr";
 
@@ -23,4 +25,6 @@ public class Infos {
 	public static String pseudo;
 	public static String playerCount = "0";
 	public static String version = "1.0.0";
+	public static final HashMap<String, String> servers = new HashMap<>();
+	public static final HashMap<String, String> ports = new HashMap<>();
 }

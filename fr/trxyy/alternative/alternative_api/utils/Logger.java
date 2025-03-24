@@ -1,26 +1,27 @@
 package fr.trxyy.alternative.alternative_api.utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
  * @author Trxyy
  */
 public class Logger {
-	
-	/**
-	 * Log Lines for console
-	 */
-	private static ArrayList<String> logLines = new ArrayList<String>();
+	// Path to log file
+	private static final File LOG_FILE = new File("logs/launcher/latest.txt");
 
 	/**
 	 * Log a text
 	 * @param s The text to log
 	 */
 	public static void log(String s) {
-		System.out.println(getName() + (s.startsWith("=") || s.startsWith("|")  ? "" : " ") + s);
-		logLines.add(getTime() + getName() + s);
+		String logMessage = getName() + (s.startsWith("=") || s.startsWith("|") ? "" : " ") + s;
+		System.out.println(logMessage);
+		saveToFile(getTime() + logMessage);
 	}
 
 	/**
@@ -28,8 +29,28 @@ public class Logger {
 	 * @param s The text to log
 	 */
 	public static void err(String s) {
-		System.err.println(getName() + s);
-		logLines.add(getTime() + getName() + "[ERROR]" + s);
+		String logMessage = getName() + "[ERROR] " + s;
+		System.err.println(logMessage);
+		saveToFile(getTime() + logMessage);
+	}
+
+	/**
+	 * Saves logs to the file
+	 * @param logMessage The log message to save
+	 */
+	private static void saveToFile(String logMessage) {
+		// Ensure the logs directory exists
+		File logDir = new File("logs/launcher");
+		if (!logDir.exists()) {
+			logDir.mkdirs();
+		}
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+			writer.write(logMessage);
+			writer.newLine();
+		} catch (IOException e) {
+			System.err.println("[Logger] Failed to write log to file: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -40,20 +61,8 @@ public class Logger {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		return "[" + sdf.format(cal.getTime()) + "]";
 	}
-	
-	/**
-	 * @return The lines for the console
-	 */
-	public static String getLines() {
-		String s = "";
-		for (int i = 0; i < logLines.size(); i++) {
-			s = s + "\n" + logLines.get(i);
-		}
-		return s;
-	}
-	
+
 	private static String getName() {
 		return "[Krosmocraft]";
 	}
-
 }

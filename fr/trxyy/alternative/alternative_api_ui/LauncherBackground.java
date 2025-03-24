@@ -55,7 +55,7 @@ public class LauncherBackground {
 		if (mediaName.endsWith(".mp4") || mediaName.endsWith(".avi") || mediaName.endsWith(".mov")) {
 			player = new MediaPlayer(getMedia(engine, mediaName));
 			try {
-				Thread.sleep(500); // Trying to let the media load (low connection & lags)
+				Thread.sleep(200); // Trying to let the media load (low connection & lags)
 			} catch (InterruptedException ignored) {}
 			viewer = new MediaView(player);
 			viewer.setFitWidth(engine.getLauncherPreferences().getWidth());

@@ -3,7 +3,6 @@ package fr.trxyy.launcher.template;
 import java.text.DecimalFormat;
 
 import fr.trxyy.alternative.alternative_api.*;
-import javafx.animation.KeyValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaPlayer;
@@ -49,6 +48,7 @@ public class LauncherMain extends AlternativeBase {
 		this.updater.reg(gameEngine);
 		this.gameEngine.reg(this.updater);
 		Thread updateThread = new Thread(() -> updater.run());
+		this.updater.downloadAvailableServers();
 		updateThread.start();
 		/** ===================== REFAICHIR LE NOM DU FICHIER, PROGRESSBAR, POURCENTAGE  ===================== **/
 		Timeline timeline = new Timeline(
