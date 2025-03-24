@@ -4,6 +4,8 @@ import java.lang.management.ManagementFactory;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import fr.trxyy.alternative.alternative_api.GameEngine;
 import fr.trxyy.alternative.alternative_api.GameSize;
@@ -68,14 +70,16 @@ public class Settings {
 	private final ResourceLocation loc;
 	private LauncherLabel selected;
 	private final String USERNAME;
+	private LauncherLabel titleLabel;
 	
-	public Settings(LauncherConfig config, GameEngine engine, ResourceLocation loc, String username, int size){
+	public Settings(LauncherConfig config, GameEngine engine, ResourceLocation loc, String username, int size, LauncherLabel titleLabel){
 		this.root = LauncherMain.pane;
 		this.config = config;
 		this.theGameEngine = engine;
 		this.loc = loc;
 		this.USERNAME = username;
 		this.size = size;
+		this.titleLabel = titleLabel;
 	}
 	
 	public void draw() {
@@ -649,11 +653,14 @@ public class Settings {
 	private LauncherLabel minecraftSubtitle;
 	private LauncherImage lineMinecraft1;
 	private LauncherImage lineMinecraft2;
+	private LauncherImage lineMinecraft3;
 	private LauncherLabel resolutionLabel;
 	private ComboBox<String> resolutionField;
 	private LauncherLabel fullScreenLabel;
 	private ToggleSwitch fullScreenToggle;
 	private LauncherLabel borderlessLabel;
+	private LauncherLabel serverLabel;
+	private ComboBox<String> serverChoice;
 	private ToggleSwitch borderlessToggle;
 	private void minecraftTab() {
 		boolean isSmall = getResponsive(10) == 10;
@@ -814,7 +821,76 @@ public class Settings {
 				}
 			}
 		});
+
+		this.lineMinecraft3 = new LauncherImage(this.loc.loadImage(theGameEngine, "grayline.png"));
+		this.lineMinecraft3.setBounds(getResponsive(10) * 30 + getResponsive(2), getResponsive(10) * 47, getResponsive(10) * 50, 1);
+		this.lineMinecraft3.setOpacity(0);
+		c = new CAnimation(lineMinecraft3.opacityProperty(), 0.5, 500);
+		c.run();
+
+		this.serverLabel = new LauncherLabel();
+		this.serverLabel.setText("Serveur");
+		this.serverLabel.setAlignment(Pos.CENTER_LEFT);
+		this.serverLabel.setFont(FontLoader.loadFont("Comfortaa-Bold.ttf", "Comfortaa", size + 1));
+		this.serverLabel.setStyle("-fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;");
+		this.serverLabel.setBounds(getResponsive(10) * 32 + getResponsive(5), getResponsive(10) * 48 - getResponsive(1), getResponsive(10) * 24, getResponsive(10) * 4);
+		this.serverLabel.setOpacity(0);
+		c = new CAnimation(serverLabel.opacityProperty(), 1, 500);
+		c.run();
+
+		this.serverChoice = new ComboBox<>();
+		this.serverChoice.setPrefSize(getResponsive(10) * 13, getResponsive(10) * 3);
+
+		String[] servers = {"Live", "Bêta Pepsi", "Bêta Nheo", "Serveur évènement"};
+		this.serverChoice.getItems().addAll(servers);
+//		this.populateSizeList();
+		if (config.getValue(EnumConfig.SERVER) != null) {
+			this.serverChoice.setValue((String) config.getValue(EnumConfig.SERVER));
+		} else {
+			this.serverChoice.setValue(servers[0]);
+			config.updateValue("server", servers[0]);
+		}
+		this.serverChoice.setLayoutX(getResponsive(10) * 32 + getResponsive(5));
+		this.serverChoice.setLayoutY(getResponsive(10) * 51 + getResponsive(8));
+		this.serverChoice.setVisibleRowCount(5);
+		this.serverChoice.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, new CornerRadii(4), BorderWidths.DEFAULT)));
+		this.serverChoice.setStyle("-fx-background-color: black; -fx-text-fill: white;");
+		this.serverChoice.setOpacity(0);
+		this.serverChoice.setVisible(true);
+		this.serverChoice.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+			public ListCell<String> call(ListView<String> param) {
+				return new ListCell<String>() {
+					protected void updateItem(String item, boolean empty) {
+						super.updateItem(item, empty);
+						setText(item);
+						setStyle(isSmall ? "-fx-font-size:13" : "-fx-font-size:25");
+						setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+						setTextFill(Color.WHITE);
+						config.updateValue("server", item);
+					}
+				};
+			}
+		});
+		this.serverChoice.setButtonCell(new ListCell<String>() {
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(item);
+				setStyle(isSmall ? "-fx-font-size:13" : "-fx-font-size:25");
+				setTextFill(Color.WHITE);
+				if (!empty) {
+					config.updateValue("gamesize", GameSize.getWindowSize(item));
+				}
+				titleLabel.setText("Krosmocraft " +  "[" + item + "]");
+			}
+		});
+		root.getChildren().add(this.serverChoice);
+		c = new CAnimation(serverChoice.opacityProperty(), 0.8, 500);
+		c.run();
+
 	}
+
+
+
 	
 	private void endMinecraft() {
     	CAnimation c = new CAnimation(minecraftTitle.opacityProperty(), 0.0, 400);
@@ -824,6 +900,8 @@ public class Settings {
     	c = new CAnimation(lineMinecraft1.opacityProperty(), 0.0, 400);
     	c.run();
 		c = new CAnimation(lineMinecraft2.opacityProperty(), 0.0, 400);
+		c.run();
+		c = new CAnimation(lineMinecraft3.opacityProperty(), 0.0, 400);
 		c.run();
     	c = new CAnimation(resolutionLabel.opacityProperty(), 0.0, 400);
     	c.run();
@@ -837,17 +915,24 @@ public class Settings {
 		c.run();
     	c = new CAnimation(borderlessLabel.opacityProperty(), 0.0, 400);
     	c.run();
+		c = new CAnimation(serverLabel.opacityProperty(), 0.0, 400);
+    	c.run();
+		c = new CAnimation(serverChoice.opacityProperty(), 0.0, 400);
+		c.run();
     	c = new CAnimation(borderlessToggle.opacityProperty(), 0.0, 400);
     	c.run();
     	this.minecraftTitle.setDisable(true);
     	this.minecraftSubtitle.setDisable(true);
     	this.lineMinecraft1.setDisable(true);
 		this.lineMinecraft2.setDisable(true);
+		this.lineMinecraft3.setDisable(true);
     	this.resolutionLabel.setDisable(true);
     	this.resolutionField.setDisable(true);
     	this.fullScreenLabel.setDisable(true);
     	this.fullScreenToggle.setDisable(true);
     	this.borderlessLabel.setDisable(true);
+    	this.serverLabel.setDisable(true);
+		this.serverChoice.setDisable(true);
     	this.borderlessToggle.setDisable(true);
 	}
 

@@ -11,17 +11,12 @@ import javax.imageio.ImageIO;
 import fr.trxyy.alternative.alternative_api.*;
 import fr.trxyy.alternative.alternative_api.build.GameRunner;
 import fr.trxyy.alternative.alternative_api.utils.FontLoader;
+import fr.trxyy.alternative.alternative_api.utils.Logger;
 import fr.trxyy.alternative.alternative_api.utils.ResourceLocation;
 import fr.trxyy.alternative.alternative_api.utils.config.EnumConfig;
 import fr.trxyy.alternative.alternative_api.utils.config.LauncherConfig;
 import fr.trxyy.alternative.alternative_api_ui.base.IScreen;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherButton;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherImage;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherLabel;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherPasswordField;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherProgressBar;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherRectangle;
-import fr.trxyy.alternative.alternative_api_ui.components.LauncherTextField;
+import fr.trxyy.alternative.alternative_api_ui.components.*;
 import fr.trxyy.alternative.alternative_auth.account.AccountType;
 import fr.trxyy.alternative.alternative_auth.base.GameAuth;
 import javafx.concurrent.Task;
@@ -66,6 +61,8 @@ public class LauncherPanel extends IScreen {
 	private static LauncherButton loginButton;
 	private static LauncherImage loadingSpin;
 	private static LauncherImage loadingSpin2;
+	private static LauncherLabel remindMe;
+	private static AnimatedCheckBox remindMeSwitch;
 	/** LINKS FOR BUTTONS IMAGES */
 	private static final String SKIN_URL = "https://krosmocraft.fr/skin";
 	private static final String INSCRIPTION_URL = "https://krosmocraft.fr/register/";
@@ -108,14 +105,18 @@ public class LauncherPanel extends IScreen {
 	public static LauncherProgressBar bar;
 	public static LauncherLabel fakeButton;
 	public static LauncherLabel playButton;
-	
-	public LauncherPanel(GameEngine engine, LauncherMain egg, boolean fullScreen, boolean phasing) {
+
+
+    public LauncherPanel(GameEngine engine, LauncherMain egg, boolean fullScreen, boolean phasing) {
 		phase2 = false;
 		phase3 = false;
+		theGameEngine = engine;
+
+		int padding = 15;
+        int inputHeight = theGameEngine.getHeight() / 12;
 
 		fontSize = fullScreen ? 22 : 12;
 		fontSize2 = fullScreen ? 26 : 14;
-		theGameEngine = engine;
 		config = new LauncherConfig(engine);
 		config.loadConfiguration();
 		config.prevQuality = (String) config.getValue(EnumConfig.QUALITY);
@@ -129,9 +130,9 @@ public class LauncherPanel extends IScreen {
 		blurRectangle.setFill(Color.rgb(10, 10, 10, 0.9));
 		titleImage = new LauncherImage();
 		titleImage.setImage(getResourceLocation().loadImage(theGameEngine, "logo.png"));
-		titleImage.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getWidth() / 14, theGameEngine.getHeight() / 12 + theGameEngine.getHeight() / 21, theGameEngine.getWidth() / 8 + theGameEngine.getWidth() / 50, theGameEngine.getHeight() / 5 + theGameEngine.getHeight() / 12);
+		titleImage.setBounds(theGameEngine.getWidth() / 3 + theGameEngine.getWidth() / 9, theGameEngine.getHeight() / 12 + theGameEngine.getHeight() / 21, theGameEngine.getWidth() / 8 + theGameEngine.getWidth() / 50, theGameEngine.getHeight() / 5 + theGameEngine.getHeight() / 12);
 		titleLabel = new LauncherLabel();
-		titleLabel.setText("Krosmocraft");
+		titleLabel.setText("Krosmocraft " + (config.getValue(EnumConfig.SERVER) != null ? "[" + config.getValue(EnumConfig.SERVER) + "]" : "[Live]" ));
 		titleLabel.setFont(FontLoader.loadFont("Comfortaa-Bold.ttf", "Comfortaa", fontSize2));
 		titleLabel.setStyle("-fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: white;");
 		titleLabel.setPosition(8, -4);
@@ -212,7 +213,8 @@ public class LauncherPanel extends IScreen {
 		if (!usernameField.getText().isEmpty() && usernameField.getText() != null) {
 			Infos.username = true;
 		}
-		usernameField.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getWidth() / 7, theGameEngine.getHeight() / 2 - theGameEngine.getHeight() / 10 + theGameEngine.getHeight() / 21, theGameEngine.getWidth() / 4 + theGameEngine.getWidth() / 28, theGameEngine.getHeight() / 12);
+
+        usernameField.setBounds(theGameEngine.getWidth() / 3 + padding, theGameEngine.getHeight() / 5 * 2 + padding, theGameEngine.getWidth() / 3 - padding, inputHeight);
 		usernameField.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize2));
 		usernameField.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4); -fx-text-fill: white;");
 		usernameField.setVoidText("Nom de compte");
@@ -234,14 +236,21 @@ public class LauncherPanel extends IScreen {
         // Set the maximum limit to 20 characters
         passwordField.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 20 ? change : null));
-        
 		if (!Infos.passwordt.isEmpty()) {
 			passwordField.setText(Infos.passwordt);
 		}
-		passwordField.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getWidth() / 7, theGameEngine.getHeight() / 2 + theGameEngine.getHeight() / 21, theGameEngine.getWidth() / 4 + theGameEngine.getWidth() / 28, theGameEngine.getHeight() / 12);
+		passwordField.setBounds(theGameEngine.getWidth() / 3 + padding, theGameEngine.getHeight() / 5 * 2 + inputHeight + padding * 2, theGameEngine.getWidth() / 3 - padding, inputHeight);
 		passwordField.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize2));
 		passwordField.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4); -fx-text-fill: white;");
 		passwordField.setVoidText("Mot de passe");
+		String savedPassword = (String)config.getValue(EnumConfig.PASSWORD);
+		if (savedPassword != null) {
+			if (!savedPassword.isEmpty()) {
+				passwordField.setText(AESUtil.decrypt(savedPassword));
+			}
+			Infos.password = !savedPassword.isEmpty();
+		}
+
 		passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
 			Infos.passwordt = passwordField.getText();
 		    if (newValue.isEmpty() || newValue == null || newValue.length() < 6) {
@@ -255,14 +264,37 @@ public class LauncherPanel extends IScreen {
 		    	}
 		    }
 		});
-		
+
+		/** ===================== SAVING LOGS STUFF ===================== */
+		remindMe = new LauncherLabel();
+		remindMeSwitch = new AnimatedCheckBox(theGameEngine.getWidth(), remindMe, config);
+		remindMeSwitch.setPrefWidth(remindMeSwitch.size);
+
+		double switchWidth = remindMeSwitch.size;
+		remindMeSwitch.setMinHeight(inputHeight);
+		remindMe.setMinHeight(inputHeight);
+		remindMeSwitch.setMinWidth(switchWidth);
+		remindMeSwitch.setMaxWidth(switchWidth);
+
+		remindMeSwitch.setOpacity(1);
+		remindMeSwitch.setLayoutX((double) theGameEngine.getWidth() / 3 + (double) padding * 0.75);
+		remindMeSwitch.setLayoutY((double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 2 + padding * 3 - ((double) padding / 2));
+
+		remindMe.setText("Se souvenir de moi");
+		remindMe.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize));
+		remindMe.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center;");
+		remindMe.setLayoutX((double) theGameEngine.getWidth() / 3 + padding + remindMeSwitch.size);
+		remindMe.setLayoutY((double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 2 + padding * 3 - ((double) padding / 2));
+		remindMe.setOpacity(1);
+		remindMe.setSize(theGameEngine.getWidth() / 8, theGameEngine.getHeight() / 20);
 
 		/** ===================== CUSTOM LOGIN STUFF ===================== */
 		forgotPassword = new LauncherLabel();
 		forgotPassword.setText("Mot de passe oublié");
 		forgotPassword.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize));
-		forgotPassword.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
-		forgotPassword.setPosition(theGameEngine.getWidth() / 2 + theGameEngine.getWidth() / 45, theGameEngine.getHeight() / 2 + theGameEngine.getHeight() / 9 + theGameEngine.getHeight() / 21);
+		forgotPassword.setPosition((double) theGameEngine.getWidth() / 3, (double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 3 + padding * 3 - ((double) padding / 2));
+		forgotPassword.setMinWidth((double) theGameEngine.getWidth() / 3);
+		forgotPassword.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center-right;");
 		forgotPassword.setOpacity(0.4);
 		forgotPassword.setSize(theGameEngine.getWidth() / 8, theGameEngine.getHeight() / 20);
 		forgotPassword.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -290,7 +322,7 @@ public class LauncherPanel extends IScreen {
 		needAccount.setText("Inscription");
 		needAccount.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize));
 		needAccount.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
-		needAccount.setPosition(theGameEngine.getWidth() / 3 + theGameEngine.getWidth() / 39, theGameEngine.getHeight() / 2 + theGameEngine.getHeight() / 9 + theGameEngine.getHeight() / 21);
+		needAccount.setPosition((double) theGameEngine.getWidth() / 3 + padding, (double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 3 + padding * 3 - ((double) padding / 2));
 		needAccount.setOpacity(0.4);
 		needAccount.setSize(theGameEngine.getWidth() / 15, theGameEngine.getHeight() / 20);
 		needAccount.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -316,14 +348,15 @@ public class LauncherPanel extends IScreen {
 
 		loadingSpin = new LauncherImage();
 		loadingSpin.setImage(getResourceLocation().loadImage(theGameEngine, "loading.png"));
-		loadingSpin.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getHeight() / 44, theGameEngine.getWidth() / 2 - theGameEngine.getHeight() / 15, theGameEngine.getHeight() / 24, theGameEngine.getHeight() / 24);
+		loadingSpin.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getHeight() / 44, theGameEngine.getHeight() / 5 * 2 + (theGameEngine.getHeight() / 12) * 3 + 15 * 11 - (15 / 2), theGameEngine.getHeight() / 24, theGameEngine.getHeight() / 24);
 		loadingSpin.setOpacity(0);
 
 		loginButton = new LauncherButton();
 		loginButton.setText("Se connecter >");
 		loginButton.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize * 2));
-		loginButton.setBounds(theGameEngine.getWidth() / 2 - theGameEngine.getWidth() / 7, theGameEngine.getHeight() / 2 + theGameEngine.getHeight() / 6 + theGameEngine.getHeight() / 21,  theGameEngine.getWidth() / 4 + theGameEngine.getWidth() / 28, theGameEngine.getHeight() / 10);
-		loginButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+		loginButton.setMinWidth((double) theGameEngine.getWidth() / 3);
+		loginButton.setPosition(theGameEngine.getWidth() / 3,  theGameEngine.getHeight() / 5 * 2 + inputHeight * 3 + padding * 7 - (padding / 2));
+		loginButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center;");
 		loginButton.setOpacity(0.2);
     	if(Infos.username && Infos.password) {
 	    	loginButton.setOpacity(0.9);
@@ -432,6 +465,10 @@ public class LauncherPanel extends IScreen {
 		    c.run();
 			c = new CAnimation(loadingSpin2.opacityProperty(), 0, 700);
 		    c.run();
+			c = new CAnimation(remindMe.opacityProperty(), 0, 700);
+			c.run();
+			c = new CAnimation(remindMeSwitch.opacityProperty(), 0, 700);
+			c.run();
 	    	Task<Void> sleeper = new Task<Void>() {
 	            @Override
 	            protected Void call() {
@@ -968,7 +1005,7 @@ public class LauncherPanel extends IScreen {
             cc.run();
         });
 		settingsHitbox.setOnMouseClicked(t -> {
-            Settings s = new Settings(config, theGameEngine, getResourceLocation(), Infos.pseudo, fontSize);
+            Settings s = new Settings(config, theGameEngine, getResourceLocation(), Infos.pseudo, fontSize, this.titleLabel);
             s.draw();
         });
 		settingsHitbox.setOnMouseExited(t -> {
@@ -1059,6 +1096,11 @@ public class LauncherPanel extends IScreen {
 		if(Infos.username && Infos.password) {
 			if (!usernameField.getText().isEmpty() && !passwordField.getText().isEmpty()) {
 				config.updateValue("username", usernameField.getText());
+				if ((boolean) config.getValue(EnumConfig.ISPASSWORDSAVED)) {
+					config.updateValue("password", AESUtil.encrypt(passwordField.getText()));
+				} else {
+					config.updateValue("password", "");
+				}
 				loginButton.setText("Connexion...");
 				usernameField.setDisable(true);
 				passwordField.setDisable(true);
@@ -1080,7 +1122,7 @@ public class LauncherPanel extends IScreen {
 									loadingSpin2 = new LauncherImage();
 									loadingSpin2.setImage(new Image(ResourceLocation.class.getResource(theGameEngine.getLauncherPreferences().getResourceLocation() + "checked.gif").toExternalForm(), theGameEngine.getHeight() / 20, theGameEngine.getHeight() / 20, true, true));
 									loadingSpin2.setX(theGameEngine.getWidth() / 2 - theGameEngine.getHeight() / 37);
-									loadingSpin2.setY(theGameEngine.getHeight() * 0.817);
+									loadingSpin2.setY(theGameEngine.getHeight() / 5 * 2 + (theGameEngine.getHeight() / 12) * 3 + 15 * 11 - (15 / 2));
 									loginButton.setText("Succès !");
 									String username = usernameField.getText();
 								 	Infos.connected = true;
@@ -1113,7 +1155,7 @@ public class LauncherPanel extends IScreen {
 									loadingSpin2 = new LauncherImage();
 									loadingSpin2.setImage(new Image(ResourceLocation.class.getResource(theGameEngine.getLauncherPreferences().getResourceLocation() + "checked.gif").toExternalForm(), theGameEngine.getHeight() / 20, theGameEngine.getHeight() / 20, true, true));
 									loadingSpin2.setX(theGameEngine.getWidth() / 2 - theGameEngine.getHeight() / 37);
-									loadingSpin2.setY(theGameEngine.getHeight() * 0.817);
+									loadingSpin2.setY(theGameEngine.getHeight() / 5 * 2 + (theGameEngine.getHeight() / 12) * 3 + 15 * 11 - (15 / 2));
 									loginButton.setText("Succès !");
 								 	String username = usernameField.getText();
 								 	Infos.connected = true;

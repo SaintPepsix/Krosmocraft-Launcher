@@ -10,6 +10,18 @@ public class ConfigVersion {
 	 */
 	public String username;
 	/**
+	 * The encrypted password
+	 */
+	public String password;
+	/**
+	 * Is password saved ?
+	 */
+	public boolean isPasswordSaved;
+	/**
+	 * Server choice
+	 */
+	public String server;
+	/**
 	 * The RAM
 	 */
 	public String allocatedram;
@@ -49,6 +61,9 @@ public class ConfigVersion {
 		this.fullscreen = o.fullscreen;
 		this.borderless = o.borderless;
 		this.quality = o.quality;
+		this.password = o.password;
+		this.isPasswordSaved = o.isPasswordSaved;
+		this.server = o.server;
 
 	}
 

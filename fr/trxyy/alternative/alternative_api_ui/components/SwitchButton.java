@@ -1,5 +1,6 @@
 package fr.trxyy.alternative.alternative_api_ui.components;
 
+import fr.trxyy.launcher.template.LauncherMain;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -9,47 +10,68 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+import javafx.animation.TranslateTransition;
+import javafx.util.Duration;
+
+
 public class SwitchButton extends StackPane {
-    private final Rectangle back = new Rectangle(30, 10, Color.RED);
-    private final Button button = new Button();
-    private String buttonStyleOff = "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); -fx-background-color: WHITE;";
-    private String buttonStyleOn = "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0.2, 0.0, 0.0, 2); -fx-background-color: #00893d;";
-    private boolean state;
+    private final Rectangle back;
+    public final Button button = new Button();
 
-    private void init() {
-        getChildren().addAll(back, button);
-        setMinSize(30, 15);
-        back.maxWidth(30);
-        back.minWidth(30);
-        back.maxHeight(10);
-        back.minHeight(10);
-        back.setArcHeight(back.getHeight());
-        back.setArcWidth(back.getHeight());
-        back.setFill(Color.valueOf("#ced5da"));
-        Double r = 2.0;
-        button.setShape(new Circle(r));
-        setAlignment(button, Pos.CENTER_LEFT);
-        button.setMaxSize(15, 15);
-        button.setMinSize(15, 15);
+    private String buttonStyleOff = "-fx-background-color: white; -fx-background-radius: 50%;";
+    private String buttonStyleOn = "-fx-background-color: #00d0d4; -fx-background-radius: 50%;";
+
+    private boolean state = false;
+    private TranslateTransition transition;
+
+    public SwitchButton(double screenWidth) {
+        // Ajustement dynamique de la taille
+        double barWidth = Math.max(35, Math.min(screenWidth / 25, 60)); // Barre entre 35px et 60px
+        double barHeight = barWidth / 3; // Ajustement de la hauteur
+        double buttonSize = barHeight * 1.5; // Bouton légèrement plus grand que la barre
+
+        back = new Rectangle(barWidth, barHeight, Color.web("#ced5da"));
+        button.setShape(new Circle(buttonSize / 2));
+
         button.setStyle(buttonStyleOff);
-    }
+        setAlignment(button, Pos.CENTER_LEFT);
 
-    public SwitchButton() {
-        init();
+        getChildren().addAll(back, button);
+        setMinSize(barWidth, barHeight);
+
+        back.setArcHeight(barHeight);
+        back.setArcWidth(barHeight);
+
+        // Correction de l'erreur d'effet CSS
+        button.setStyle(buttonStyleOff);
+
+        // Initialisation de l'animation
+        transition = new TranslateTransition(Duration.millis(150), button);
+        transition.setCycleCount(1);
+
+        // Appliquer les tailles dynamiques
+        button.setMinSize(buttonSize, buttonSize);
+        button.setMaxSize(buttonSize, buttonSize);
+        button.setPrefSize(buttonSize, buttonSize);
+
+        LauncherMain.pane.getChildren().add(this);
+
+        // Gestion du clic pour animer le bouton
         EventHandler<Event> click = new EventHandler<Event>() {
             @Override
             public void handle(Event e) {
                 if (state) {
                     button.setStyle(buttonStyleOff);
-                    back.setFill(Color.valueOf("#ced5da"));
-                    setAlignment(button, Pos.CENTER_LEFT);
+                    back.setFill(Color.web("#ced5da"));
+                    transition.setToX(0); // Revient à gauche
                     state = false;
                 } else {
                     button.setStyle(buttonStyleOn);
-                    back.setFill(Color.valueOf("#80C49E"));
-                    setAlignment(button, Pos.CENTER_RIGHT);
+                    back.setFill(Color.web("#00d0d4"));
+                    transition.setToX(barWidth - buttonSize + buttonSize / 2);
                     state = true;
                 }
+                transition.play();
             }
         };
 

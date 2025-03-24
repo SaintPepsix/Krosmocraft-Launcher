@@ -49,6 +49,9 @@ public class LauncherConfig {
 			configDetails.put(EnumConfig.FULLSCREEN.getOption(), EnumConfig.FULLSCREEN.getDefault());
 			configDetails.put(EnumConfig.BORDERLESS.getOption(), EnumConfig.BORDERLESS.getDefault());
 			configDetails.put(EnumConfig.QUALITY.getOption(), EnumConfig.QUALITY.getDefault());
+			configDetails.put(EnumConfig.PASSWORD.getOption(), EnumConfig.PASSWORD.getDefault());
+			configDetails.put(EnumConfig.ISPASSWORDSAVED.getOption(), EnumConfig.ISPASSWORDSAVED.getDefault());
+			configDetails.put(EnumConfig.SERVER.getOption(), EnumConfig.SERVER.getDefault());
 
 			try {
 				FileWriter fw = new FileWriter(this.launcherConfig);
