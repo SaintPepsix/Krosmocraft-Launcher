@@ -10,7 +10,7 @@ import java.util.Base64;
 public class AESUtil {
 
     private static final String AES = "AES";
-    private static final String SECRET_KEY = "YourSecretKey123"; // Change this to a secure key
+    private static final String SECRET_KEY = "Pepsiforthewin"; // Change this to a secure key
 
     // Méthode pour chiffrer un mot de passe
     public static String encrypt(String password) {
