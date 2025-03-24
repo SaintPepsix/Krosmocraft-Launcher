@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import fr.trxyy.alternative.alternative_api.*;
 import fr.trxyy.alternative.alternative_api.build.GameRunner;
+import fr.trxyy.alternative.alternative_api.utils.AESUtil;
 import fr.trxyy.alternative.alternative_api.utils.FontLoader;
 import fr.trxyy.alternative.alternative_api.utils.Logger;
 import fr.trxyy.alternative.alternative_api.utils.ResourceLocation;
@@ -277,13 +278,13 @@ public class LauncherPanel extends IScreen {
 		remindMeSwitch.setMaxWidth(switchWidth);
 
 		remindMeSwitch.setOpacity(1);
-		remindMeSwitch.setLayoutX((double) theGameEngine.getWidth() / 3 + (double) padding * 0.75);
+		remindMeSwitch.setLayoutX((double) theGameEngine.getWidth() / 3 + (double) padding);
 		remindMeSwitch.setLayoutY((double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 2 + padding * 3 - ((double) padding / 2));
 
 		remindMe.setText("Se souvenir de moi");
 		remindMe.setFont(FontLoader.loadFont("Comfortaa-Regular.ttf", "Comfortaa", fontSize));
-		remindMe.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: center;");
-		remindMe.setLayoutX((double) theGameEngine.getWidth() / 3 + padding + remindMeSwitch.size);
+		remindMe.setStyle("-fx-background-color: transparent; -fx-alignment: center;");
+		remindMe.setLayoutX((double) theGameEngine.getWidth() / 3 + padding * 2 + (remindMeSwitch.size / 2));
 		remindMe.setLayoutY((double) theGameEngine.getHeight() / 5 * 2 + inputHeight * 2 + padding * 3 - ((double) padding / 2));
 		remindMe.setOpacity(1);
 		remindMe.setSize(theGameEngine.getWidth() / 8, theGameEngine.getHeight() / 20);
