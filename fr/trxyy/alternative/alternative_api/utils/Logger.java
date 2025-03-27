@@ -34,6 +34,7 @@ public class Logger {
 		saveToFile(getTime() + logMessage);
 	}
 
+	private static boolean isFirstLog = true;
 	/**
 	 * Saves logs to the file
 	 * @param logMessage The log message to save
@@ -45,11 +46,15 @@ public class Logger {
 			logDir.mkdirs();
 		}
 
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG_FILE, !isFirstLog))) {
 			writer.write(logMessage);
 			writer.newLine();
 		} catch (IOException e) {
 			System.err.println("[Logger] Failed to write log to file: " + e.getMessage());
+		}
+
+		if (isFirstLog){
+			isFirstLog = false;
 		}
 	}
 
