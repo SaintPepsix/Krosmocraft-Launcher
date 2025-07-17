@@ -23,7 +23,15 @@ public class GameUtils {
 			workingDirectory = new File(userHome + "/." + workDir);
 			break;
 		case 3:
-			workingDirectory = new File(userHome + "\\AppData\\Roaming\\." + workDir);
+			try{
+				// Set the working directory to the launcher jar location
+				workingDirectory = new File(
+						GameUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI()
+				).getParentFile();
+			}
+			catch (Exception e){
+				workingDirectory = new File(userHome + "\\AppData\\Roaming\\." + workDir);
+			}
 			break;
 		case 4:
 			workingDirectory = new File(userHome + "/Library/Application Support/" + workDir);
